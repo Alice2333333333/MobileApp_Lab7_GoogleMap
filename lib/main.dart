@@ -1,52 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_map/gmap.dart';
 
-void main() {
-  runApp(const MapSample());
-}
+void main() => runApp(MyApp());
 
-class MapSample extends StatefulWidget {
-  const MapSample({super.key});
-
-  @override
-  State<MapSample> createState() => MapSampleState();
-}
-
-class MapSampleState extends State<MapSample> {
-  GoogleMapController? _controller;
-
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
-
-  static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: GoogleMap(
-          mapType: MapType.hybrid,
-          initialCameraPosition: _kGooglePlex,
-          onMapCreated: (GoogleMapController controller) {
-            _controller = controller;
-          },
+      title: 'Coding with Curry',
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _getLocationPermission();
+  // }
+
+  // void _getLocationPermission() async {
+  //   var location = new Location();
+  //   try {
+  //     location.requestPermission();
+  //   } on Exception catch (_) {
+  //     print('There was a problem allowing location access');
+  //   }
+  // }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Coding with Curry'),
+      ),
+      body: Container(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const <Widget> [
+              Text(
+                'Using Google Maps in Flutter',
+                style: TextStyle(fontSize: 42),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'The google_maps_flutter package is still in the Developers Preview status, so make sure you monitor changes closely when using it. There will likely be breaking changes in the near future.',
+                style: TextStyle(fontSize: 20),
+              ),
+            ],
+          ),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: _goToTheLake,
-          label: const Text('To the lake!'),
-          icon: const Icon(Icons.directions_boat),
+      ),
+    floatingActionButton: FloatingActionButton(
+        tooltip: 'Increment',
+        child: const Icon(Icons.map),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const GMap()),
         ),
       ),
     );
-  }
-
-  void _goToTheLake() {
-    _controller?.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }
