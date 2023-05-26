@@ -1,8 +1,7 @@
 import 'dart:collection';
 import 'dart:ui' as ui;
-import 'dart:typed_data';
+// import 'dart:typed_data';
 import 'package:flutter/services.dart';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -27,10 +26,45 @@ class _GMapState extends State<GMap> {
   void initState() {
     super.initState();
     // _createMarkerImageFromAsset(context);
-    getBytesFromAsset('assets/noodle_icon.png', 64).then((onValue) {
+    getBytesFromAsset('assets/noodle_icon.png', 150).then((onValue) {
       _markerIcon = BitmapDescriptor.fromBytes(onValue);
     });
     setState(() {});
+  }
+
+  Marker _createMarker() {
+    if (_markerIcon != null) {
+      return Marker(
+        markerId: const MarkerId('0'),
+        position: _kMapCenter,
+        icon: _markerIcon!,
+        infoWindow: const InfoWindow(
+          title: "San Francisco",
+          snippet: "An interesting city",
+        ),
+      );
+    } else {
+      return const Marker(
+        markerId: MarkerId('0'),
+        position: _kMapCenter,
+      );
+    }
+  }
+
+  static Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
+  }
+
+   void _onMapCreated(GoogleMapController controller) {
+    setState(() {
+      _mapController = controller;
+    });
   }
 
   @override
@@ -48,9 +82,9 @@ class _GMapState extends State<GMap> {
               zoom: 12,
             ),
             markers: <Marker>{_createMarker()},
-            // polygons: _polygons,
-            // polylines: _polylines,
-            // circles: _circles,
+            polygons: _polygons,
+            polylines: _polylines,
+            circles: _circles,
             myLocationButtonEnabled: true,
           ),
           Container(
@@ -63,55 +97,24 @@ class _GMapState extends State<GMap> {
     );
   }
 
-  Marker _createMarker() {
-    if (_markerIcon != null) {
-      return Marker(
-        markerId: const MarkerId('marker_1'),
-        position: _kMapCenter,
-        icon: _markerIcon!,
-      );
-    } else {
-      return const Marker(
-        markerId: MarkerId('marker_1'),
-        position: _kMapCenter,
-      );
-    }
-  }
+  // Future<void> _createMarkerImageFromAsset(BuildContext context) async {
+  //   // if (_markerIcon == null) {
+  //   //   final ImageConfiguration imageConfiguration =
+  //   //       createLocalImageConfiguration(context, size: const Size.square(48));
+  //   //   BitmapDescriptor.fromAssetImage(
+  //   //           imageConfiguration, 'assets/red_square.png')
+  //   //       .then(_updateBitmap);
+  //   // }
+  //   setState(() {
+  //     getBytesFromAsset('assets/red_square.png', 64).then((onValue) {
+  //       _markerIcon = BitmapDescriptor.fromBytes(onValue);
+  //     });
+  //   });
+  // }
 
-  static Future<Uint8List> getBytesFromAsset(String path, int width) async {
-    ByteData data = await rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
-        targetWidth: width);
-    ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
-  }
-
-  Future<void> _createMarkerImageFromAsset(BuildContext context) async {
-    // if (_markerIcon == null) {
-    //   final ImageConfiguration imageConfiguration =
-    //       createLocalImageConfiguration(context, size: const Size.square(48));
-    //   BitmapDescriptor.fromAssetImage(
-    //           imageConfiguration, 'assets/red_square.png')
-    //       .then(_updateBitmap);
-    // }
-    setState(() {
-      getBytesFromAsset('assets/red_square.png', 64).then((onValue) {
-        _markerIcon = BitmapDescriptor.fromBytes(onValue);
-      });
-    });
-  }
-
-  void _updateBitmap(BitmapDescriptor bitmap) {
-    setState(() {
-      _markerIcon = bitmap;
-    });
-  }
-
-  void _onMapCreated(GoogleMapController controllerParam) {
-    setState(() {
-      _mapController = controllerParam;
-    });
-  }
+  // void _updateBitmap(BitmapDescriptor bitmap) {
+  //   setState(() {
+  //     _markerIcon = bitmap;
+  //   });
+  // }
 }
