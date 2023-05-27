@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:ui' as ui;
+import 'package:location/location.dart';
 // import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -14,21 +15,24 @@ class GMap extends StatefulWidget {
 
 class _GMapState extends State<GMap> {
   static const LatLng _kMapCenter = LatLng(37.77483, -122.41942);
-  GoogleMapController? _mapController;
+  GoogleMapController? _controller;
   BitmapDescriptor? _markerIcon;
 
   final Set<Marker> _markers = HashSet<Marker>();
   final Set<Polygon> _polygons = HashSet<Polygon>();
   final Set<Polyline> _polylines = HashSet<Polyline>();
   final Set<Circle> _circles = HashSet<Circle>();
+  // final Set<Marker> _markers = HashSet<Marker>();
 
   @override
   void initState() {
     super.initState();
-    // _createMarkerImageFromAsset(context);
     getBytesFromAsset('assets/noodle_icon.png', 150).then((onValue) {
       _markerIcon = BitmapDescriptor.fromBytes(onValue);
     });
+    _setPolygons();
+    _setPolylines();
+    _setCircles();
     setState(() {});
   }
 
@@ -61,10 +65,72 @@ class _GMapState extends State<GMap> {
         .asUint8List();
   }
 
-   void _onMapCreated(GoogleMapController controller) {
+  void _setPolygons() {
+    List<LatLng> polygonLatLongs = [];
+    polygonLatLongs.add(const LatLng(37.78493, -122.42932));
+    polygonLatLongs.add(const LatLng(37.78693, -122.41942));
+    polygonLatLongs.add(const LatLng(37.78923, -122.41542));
+    polygonLatLongs.add(const LatLng(37.78923, -122.42582));
+
+    _polygons.add(Polygon(
+      polygonId: const PolygonId("0"),
+      points: polygonLatLongs,
+      fillColor: Colors.white,
+      strokeWidth: 1,
+    ));
+  }
+
+  void _setPolylines() {
+    List<LatLng> polylineLatLongs = [];
+    polylineLatLongs.add(const LatLng(37.74493, -122.42932));
+    polylineLatLongs.add(const LatLng(37.74693, -122.41942));
+    polylineLatLongs.add(const LatLng(37.74923, -122.41542));
+    polylineLatLongs.add(const LatLng(37.74923, -122.42582));
+    polylineLatLongs.add(const LatLng(37.74493, -122.42923));
+
+    _polylines.add(
+      Polyline(
+        polylineId: const PolylineId("0"),
+        points: polylineLatLongs,
+        color: Colors.purple,
+        width: 1,
+      ),
+    );
+  }
+
+  void _setCircles() {
+    _circles.add(
+      const Circle(
+          circleId: CircleId("0"),
+          center: LatLng(37.76493, -122.42432),
+          radius: 1000,
+          strokeWidth: 2,
+          fillColor: Color.fromRGBO(102, 51, 153, .5)),
+    );
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
     setState(() {
-      _mapController = controller;
+      _controller = controller;
     });
+  }
+
+  void _currentLocation() async {
+    LocationData? currentLocation;
+    var location = Location();
+    try {
+      currentLocation = await location.getLocation();
+    } on Exception {
+      currentLocation = null;
+    }
+
+    _controller?.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+        bearing: 0,
+        target: LatLng(currentLocation!.latitude!, currentLocation.longitude!),
+        zoom: 17.0,
+      ),
+    ));
   }
 
   @override
@@ -76,6 +142,11 @@ class _GMapState extends State<GMap> {
       body: Stack(
         children: <Widget>[
           GoogleMap(
+            mapType: MapType.normal,
+            // onMapCreated: (GoogleMapController controller) {
+            //   _controller = controller;
+            // },
+            myLocationEnabled: true,
             onMapCreated: _onMapCreated,
             initialCameraPosition: const CameraPosition(
               target: _kMapCenter,
@@ -85,7 +156,7 @@ class _GMapState extends State<GMap> {
             polygons: _polygons,
             polylines: _polylines,
             circles: _circles,
-            myLocationButtonEnabled: true,
+            // myLocationButtonEnabled: false,
           ),
           Container(
             alignment: Alignment.bottomCenter,
@@ -94,6 +165,11 @@ class _GMapState extends State<GMap> {
           ),
         ],
       ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: _currentLocation,
+      //   label: const Text('My Location'),
+      //   icon: const Icon(Icons.location_on),
+      // ),
     );
   }
 
