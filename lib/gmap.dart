@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:ui' as ui;
 import 'package:location/location.dart';
-// import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -108,16 +107,9 @@ class _GMapState extends State<GMap> {
     );
   }
 
-  // void _onMapCreated(GoogleMapController controller) {
-  //   setState(() async {
-  //     _controller = controller;
-  //   });
-  // }
-
   Future <void> _onMapCreated(GoogleMapController controller) async {
     setState(() {
       _controller = controller;
-
     });
     String value = await DefaultAssetBundle.of(context)
         .loadString('assets/map_style.json');
@@ -152,9 +144,6 @@ class _GMapState extends State<GMap> {
         children: <Widget>[
           GoogleMap(
             mapType: MapType.normal,
-            // onMapCreated: (GoogleMapController controller) {
-            //   _controller = controller;
-            // },
             myLocationEnabled: true,
             onMapCreated: _onMapCreated,
             initialCameraPosition: const CameraPosition(
@@ -165,7 +154,6 @@ class _GMapState extends State<GMap> {
             polygons: _polygons,
             polylines: _polylines,
             circles: _circles,
-            // myLocationButtonEnabled: false,
           ),
           Container(
             alignment: Alignment.bottomCenter,
@@ -174,32 +162,6 @@ class _GMapState extends State<GMap> {
           ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: _currentLocation,
-      //   label: const Text('My Location'),
-      //   icon: const Icon(Icons.location_on),
-      // ),
     );
   }
-
-  // Future<void> _createMarkerImageFromAsset(BuildContext context) async {
-  //   // if (_markerIcon == null) {
-  //   //   final ImageConfiguration imageConfiguration =
-  //   //       createLocalImageConfiguration(context, size: const Size.square(48));
-  //   //   BitmapDescriptor.fromAssetImage(
-  //   //           imageConfiguration, 'assets/red_square.png')
-  //   //       .then(_updateBitmap);
-  //   // }
-  //   setState(() {
-  //     getBytesFromAsset('assets/red_square.png', 64).then((onValue) {
-  //       _markerIcon = BitmapDescriptor.fromBytes(onValue);
-  //     });
-  //   });
-  // }
-
-  // void _updateBitmap(BitmapDescriptor bitmap) {
-  //   setState(() {
-  //     _markerIcon = bitmap;
-  //   });
-  // }
 }
