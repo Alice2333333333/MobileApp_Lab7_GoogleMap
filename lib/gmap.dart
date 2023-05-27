@@ -22,7 +22,6 @@ class _GMapState extends State<GMap> {
   final Set<Polygon> _polygons = HashSet<Polygon>();
   final Set<Polyline> _polylines = HashSet<Polyline>();
   final Set<Circle> _circles = HashSet<Circle>();
-  // final Set<Marker> _markers = HashSet<Marker>();
 
   @override
   void initState() {
@@ -109,10 +108,20 @@ class _GMapState extends State<GMap> {
     );
   }
 
-  void _onMapCreated(GoogleMapController controller) {
+  // void _onMapCreated(GoogleMapController controller) {
+  //   setState(() async {
+  //     _controller = controller;
+  //   });
+  // }
+
+  Future <void> _onMapCreated(GoogleMapController controller) async {
     setState(() {
       _controller = controller;
+
     });
+    String value = await DefaultAssetBundle.of(context)
+        .loadString('assets/map_style.json');
+    _controller?.setMapStyle(value);
   }
 
   void _currentLocation() async {
