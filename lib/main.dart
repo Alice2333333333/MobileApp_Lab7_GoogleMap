@@ -25,21 +25,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _getLocationPermission();
-  // }
-
-  // void _getLocationPermission() async {
-  //   var location = new Location();
-  //   try {
-  //     location.requestPermission();
-  //   } on Exception catch (_) {
-  //     print('There was a problem allowing location access');
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
